@@ -1,5 +1,3 @@
-import com.sun.deploy.util.StringUtils;
-
 import java.math.BigDecimal;
 
 /**
@@ -109,7 +107,7 @@ public class ALU {
      */
     public String decimalTrueFormToDec(String decimal) {
         BigDecimal res = new BigDecimal(0);
-        char[] dec = decimal.replace("0.","").toCharArray();
+        char[] dec = decimal.replace("0.", "").toCharArray();
         for (int i = 0; i < dec.length; i++) {
             res = res.add(new BigDecimal((dec[i] - '0') * Math.pow(2, -i - 1)));
         }
@@ -410,17 +408,17 @@ public class ALU {
                 integer = mantissa.substring(0, exp + 1);
                 //隐含的1被放入到decimal中
                 //前面默认有一个0.
-                decimal = "0."+mantissa.substring(exp + 1);
-            }else{
+                decimal = "0." + mantissa.substring(exp + 1);
+            } else {
                 //整数部分为0的情况
                 integer = "0";
-                decimal = decimalLeftShift(beforeDot+"."+mantissa,-exp);
+                decimal = decimalLeftShift(beforeDot + "." + mantissa, -exp);
             }
         } else {
             //这是非规格化数的情况，如果是8位指数，那么指数真值为-126( 2- 2^(n-1))，
             exp = 2 - (int) Math.pow(2, eLength - 1);
             integer = "0";
-            decimal = decimalLeftShift(beforeDot+"."+mantissa,-exp);
+            decimal = decimalLeftShift(beforeDot + "." + mantissa, -exp);
         }
         sb.append(trueFormToUnSignedDec(integer));
         sb.append('.');
@@ -467,20 +465,21 @@ public class ALU {
 
     /**
      * 浮点数左移
+     *
      * @param operand
      * @param n
      * @return
      */
-    public String decimalLeftShift(String operand,int n){
+    public String decimalLeftShift(String operand, int n) {
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i < n; i++) {
             sb.append('0');
         }
-        sb.insert(1,'.');
-        sb.append(operand.replace(".",""));
+        sb.insert(1, '.');
+        sb.append(operand.replace(".", ""));
         return sb.toString();
     }
-    
+
     /**
      * 逻辑右移操作。<br/>
      * 例：logRightShift("11110110", 2)
@@ -490,14 +489,11 @@ public class ALU {
      * @return operand逻辑右移n位的结果
      */
     public String logRightShift(String operand, int n) {
-        System.out.println(operand);
-        System.out.println(n);
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i < n; i++) {
             sb.append("0");
         }
         sb.append(operand.substring(0, operand.length() - n));
-        System.out.println(sb.toString());
         return sb.toString();
     }
 
@@ -633,6 +629,7 @@ public class ALU {
      * 符号扩展
      * 如果第三个参数不为空，那么以第三次参数指定的符号为准
      * 如果第三个参数为空，那么以number的符号位为准
+     *
      * @param number
      * @param length
      * @param optionalSign
@@ -722,9 +719,89 @@ public class ALU {
      * @return 长度为length+1的字符串表示的相乘结果，其中第1位指示是否溢出（溢出为1，否则为0），后length位是相乘结果
      */
     public String integerMultiplication(String operand1, String operand2, int length) {
-        // TODO YOUR CODE HERE.
+        //先进行符号扩展
+        String op1 = signExtension(operand1, length);
+        String op2 = signExtension(operand2, length);
+        Booth booth = new Booth(op1, op2);
+        for (int i = 0; i < length; i++) {
+            if(booth.isAllZeroOrOne()){
+                //全为0或全为1
+                booth.rightShift();
+            }else{
+                if(booth.Q0() == 0 && booth.Qn_1() == 1){
+                    booth.addToA();
+                }else if(booth.Q0() == 1 && booth.Qn_1() == 0){
+                    booth.subFromA();
+                }
+                booth.rightShift();
+            }
+        }
+        System.out.println(booth.getResult());
         return null;
     }
+
+    /**
+     * 布斯算法辅助类
+     * 简化对A、Q、Qn_1的操作
+     */
+    private class Booth {
+        private String M;
+        private String AQQn_1;
+        private String Q;
+        private int length;
+
+        Booth(String Q, String M) {
+            this.Q = Q;
+            this.M = M;
+            StringBuilder sb = new StringBuilder();
+            for (int i = 0; i < Q.length(); i++) {
+                sb.append('0');
+            }
+            sb.append(Q);
+            sb.append('0');
+            this.AQQn_1 = sb.toString();
+            this.length = Q.length();
+        }
+
+        public void addToA() {
+            setA(adder(getA(), M, '0', length).substring(1));
+        }
+
+        public void subFromA() {
+            setA(adder(getA(), oneAdder(negation(M)).substring(1), '0', length).substring(1));
+        }
+
+        public void rightShift() {
+            AQQn_1 = logRightShift(AQQn_1, 1);
+        }
+
+        public String getA() {
+            return AQQn_1.substring(0, length);
+        }
+
+        public void setA(String A) {
+            AQQn_1 = A + AQQn_1.substring(length);
+        }
+
+        public char Q0() {
+            return AQQn_1.charAt(AQQn_1.length() - 2);
+        }
+
+        public char Qn_1() {
+            return AQQn_1.charAt(AQQn_1.length() - 1);
+        }
+
+        public String getResult() {
+            return AQQn_1.substring(0, AQQn_1.length() - 1);
+        }
+        
+        public boolean isAllZeroOrOne(){
+            return (Q0() == 0 && Qn_1() == 0) || (Q0() == 1 && Qn_1() == 1);
+        }
+
+        
+    }
+
 
     /**
      * 整数的不恢复余数除法，可调用{@link #adder(String, String, char, int) adder}等方法实现。<br/>
