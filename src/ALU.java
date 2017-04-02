@@ -1,3 +1,6 @@
+import com.sun.deploy.util.StringUtils;
+
+import java.math.BigDecimal;
 
 /**
  * 模拟ALU进行整数和浮点数的四则运算
@@ -99,7 +102,22 @@ public class ALU {
     }
 
     /**
-     * 十进制的小数转补码
+     * 二进制原码小数转十进制
+     *
+     * @param decimal
+     * @return
+     */
+    public String decimalTrueFormToDec(String decimal) {
+        BigDecimal res = new BigDecimal(0);
+        char[] dec = decimal.replace("0.","").toCharArray();
+        for (int i = 0; i < dec.length; i++) {
+            res = res.add(new BigDecimal((dec[i] - '0') * Math.pow(2, -i - 1)));
+        }
+        return res.toString();
+    }
+
+    /**
+     * 十进制的小数转二进制原码
      *
      * @param number
      * @param length
@@ -220,6 +238,22 @@ public class ALU {
     }
 
     /**
+     * 判断数字中是否全部字符都是某个字符
+     *
+     * @param number
+     * @param specificChar
+     * @return
+     */
+    public boolean allOf(String number, char specificChar) {
+        for (char c : number.toCharArray()) {
+            if (c != specificChar) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /**
      * 生成十进制浮点数的二进制表示。
      * 需要考虑 0、反规格化、正负无穷（“+Inf”和“-Inf”）、 NaN等因素，具体借鉴 IEEE 754。
      * 舍入策略为向0舍入。<br/>
@@ -249,14 +283,7 @@ public class ALU {
         }
 
         //处理0的情况
-        boolean allZero = true;
-        for (char c : num.replace(".", "").toCharArray()) {
-            if (c != '0') {
-                allZero = false;
-                break;
-            }
-        }
-        if (allZero) {
+        if (allOf(num.replace(".", ""), '0')) {
             return sb.append(generateExp(0, eLength)).append(generateMantissa("0", sLength)).toString();
         }
 
@@ -273,13 +300,20 @@ public class ALU {
             String rawExp = toInteger(num.substring(0, num.indexOf('.')));
             //只有小数部分的情况
             if (rawExp.length() == 0) {
-                mantissa = decimalIntegerRepresentation(num.substring(num.indexOf('.')), sLength);
+                mantissa = decimalIntegerRepresentation(num.substring(num.indexOf('.')), 2 * sLength);
                 expDec = -mantissa.indexOf('1') - 1;
-                int beginIndex = mantissa.indexOf('1') + 1;
-                if (beginIndex >= mantissa.length()) {
+                //加1是取第一个1之后的部分，因为第一个1是小数点前的1，不必将其包含到尾数部分
+                int mantissaBeginIndex = mantissa.indexOf('1') + 1;
+                if (mantissaBeginIndex > mantissa.length()) {
                     mantissa = "0";
+                } else if (mantissaBeginIndex == mantissa.length() && (expDec + (int) Math.pow(2, eLength - 1) - 1) == 0) {
+                    //此时为非规格化数
+                    //比如指数为8位时，当指数真值为-126(2 - 2^(n-1))时，且阶码二进制的第一个1之后全为0，则被视为非规格化数
+                    //在这里真值为1-2^(n-1)，这是规格化的指数最小值，当默认小数点前为1取尾数时，发现尾数全为0
+                    //为了尾数不全为0，就让出一位给尾数，且令指数全为0，默认小数点前为0
+                    mantissa = mantissa.substring(mantissaBeginIndex - 1);
                 } else {
-                    mantissa = mantissa.substring(beginIndex);
+                    mantissa = mantissa.substring(mantissaBeginIndex);
                 }
             } else {
                 //既有整数，又有小数的情况
@@ -335,15 +369,65 @@ public class ALU {
      * @return operand的真值。若为负数；则第一位为“-”；若为正数或 0，则无符号位。正负无穷分别表示为“+Inf”和“-Inf”， NaN表示为“NaN”
      */
     public String floatTrueValue(String operand, int eLength, int sLength) {
+
+        String expStr = operand.substring(1, 1 + eLength);
+        String mantissa = operand.substring(1 + eLength);
+        char beforeDot = '1';
+        //处理无穷和Nan
+        if (allOf(expStr, '1')) {
+            //如果指数全为1，尾数全为0，那么是无穷
+            if (allOf(mantissa, '0')) {
+                return (operand.charAt(0) == '0' ? '+' : '-') + "Inf";
+            } else {
+                //如果指数全为1，尾数不全为0，那么是非数
+                return "NaN";
+            }
+        } else if (allOf(expStr, '0')) {
+            //处理0的情况
+            if (allOf(mantissa, '0')) {
+                return "0";
+            } else {
+                //当阶码全为0，且尾数不全为0时，为非规格化数，小数点前为0
+                //此时规定阶码为2 - 2^(n-1)
+                beforeDot = '0';
+            }
+        }
         StringBuilder sb = new StringBuilder();
         if (operand.charAt(0) == '1') {
             sb.append('-');
         }
-        String expStr = operand.substring(1, 1 + eLength);
-        String mantissa = operand.substring(1 + eLength);
-        int exp = trueFormToUnSignedDec(expStr) - ((int)Math.pow(2, eLength - 1) - 1);
-        
-        return null;
+
+        //获取二进制原码的整数和小数
+        int exp;
+        String integer;
+        String decimal;
+        //这是规格化数的情况
+        if (beforeDot == '1') {
+            exp = trueFormToUnSignedDec(expStr) - ((int) Math.pow(2, eLength - 1) - 1);
+            //整数部分不为0的情况
+            if (exp >= 0) {
+                mantissa = new StringBuilder().append(beforeDot).append(mantissa).toString();
+                integer = mantissa.substring(0, exp + 1);
+                //隐含的1被放入到decimal中
+                //前面默认有一个0.
+                decimal = "0."+mantissa.substring(exp + 1);
+            }else{
+                //整数部分为0的情况
+                integer = "0";
+                decimal = decimalLeftShift(beforeDot+"."+mantissa,-exp);
+            }
+        } else {
+            //这是非规格化数的情况，如果是8位指数，那么指数真值为-126( 2- 2^(n-1))，
+            exp = 2 - (int) Math.pow(2, eLength - 1);
+            integer = "0";
+            decimal = decimalLeftShift(beforeDot+"."+mantissa,-exp);
+        }
+        sb.append(trueFormToUnSignedDec(integer));
+        sb.append('.');
+        //二进制原码小数转十进制
+        String dec = decimalTrueFormToDec(decimal);
+        sb.append(dec.substring(dec.indexOf('.') + 1));
+        return sb.toString();
     }
 
     /**
@@ -382,6 +466,22 @@ public class ALU {
     }
 
     /**
+     * 浮点数左移
+     * @param operand
+     * @param n
+     * @return
+     */
+    public String decimalLeftShift(String operand,int n){
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < n; i++) {
+            sb.append('0');
+        }
+        sb.insert(1,'.');
+        sb.append(operand.replace(".",""));
+        return sb.toString();
+    }
+    
+    /**
      * 逻辑右移操作。<br/>
      * 例：logRightShift("11110110", 2)
      *
@@ -390,11 +490,14 @@ public class ALU {
      * @return operand逻辑右移n位的结果
      */
     public String logRightShift(String operand, int n) {
+        System.out.println(operand);
+        System.out.println(n);
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i < n; i++) {
             sb.append("0");
         }
         sb.append(operand.substring(0, operand.length() - n));
+        System.out.println(sb.toString());
         return sb.toString();
     }
 
@@ -526,7 +629,15 @@ public class ALU {
         return new String(res);
     }
 
-
+    /**
+     * 符号扩展
+     * 如果第三个参数不为空，那么以第三次参数指定的符号为准
+     * 如果第三个参数为空，那么以number的符号位为准
+     * @param number
+     * @param length
+     * @param optionalSign
+     * @return
+     */
     public String signExtension(String number, int length, char... optionalSign) {
         if (number.length() == length) {
             return number;

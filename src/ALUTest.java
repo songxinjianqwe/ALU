@@ -85,6 +85,7 @@ public class ALUTest {
 
     @Test
     public void floatRepresentationTest() {
+        assertEquals("00000010000000000", alu.floatRepresentation("0.000030517578125", 5, 11));
         assertEquals("0011101000000", alu.floatRepresentation("1.25", 4, 8));
         assertEquals("0010100000000", alu.floatRepresentation("0.25", 4, 8));
         assertEquals("0111100000000", alu.floatRepresentation("+Inf", 4, 8));
@@ -123,6 +124,7 @@ public class ALUTest {
     @Test
     public void floatTrueValueTest() {
         assertEquals("11.375", alu.floatTrueValue("01000001001101100000", 8, 11));
+        assertEquals("0.0234375", alu.floatTrueValue("0000110000000", 4, 8));
         assertEquals("10.0", alu.floatTrueValue("01000001001000000000", 8, 11));
         assertEquals("1.0", alu.floatTrueValue("00111111100000000000", 8, 11));
         assertEquals("-1.0", alu.floatTrueValue("10111111100000000000", 8, 11));
@@ -132,12 +134,10 @@ public class ALUTest {
         assertEquals("-Inf", alu.floatTrueValue("11111100000000000", 5, 11));
         assertEquals("NaN", alu.floatTrueValue("01111111101101100000", 8, 11));
         assertEquals("NaN", alu.floatTrueValue("111111111101101100000", 9, 11));
-        assertEquals("0.000030517578125", alu.floatTrueValue("00000010000000000", 5, 11));
         assertEquals("0", alu.floatTrueValue("00000000000000000", 5, 11));
         assertEquals("0", alu.floatTrueValue("10000000000000000", 5, 11));
+        assertEquals("0.000030517578125", alu.floatTrueValue("00000010000000000", 5, 11));
         assertEquals("0.0078125", alu.floatTrueValue("0000010000000", 4, 8));
-        assertEquals("0.0234375", alu.floatTrueValue("0000110000000", 4, 8));
-
     }
 
     @Test
