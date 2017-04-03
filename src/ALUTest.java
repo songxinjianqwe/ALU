@@ -243,9 +243,11 @@ public class ALUTest {
 
     @Test
     public void integerDivisionTest() {
+        assertEquals("00000000100000001", alu.integerDivision("0100", "0011", 8));
+        assertEquals("000010001", alu.integerDivision("0100", "0011", 4));
+        
         assertEquals("000000000", alu.integerDivision("0000", "0011", 4));
         assertEquals("01111111011111111", alu.integerDivision("1001", "0011", 8));
-        
         assertEquals("011101111", alu.integerDivision("1001", "0011", 4));
         assertEquals("01111111011111111", alu.integerDivision("1001", "0011", 8));
         assertEquals("000010010", alu.integerDivision("0110", "0100", 4));
@@ -256,7 +258,6 @@ public class ALUTest {
         assertEquals("011111101", alu.integerDivision("1010", "0011", 4));
         assertEquals("001011111", alu.integerDivision("1010", "1111", 4));
         assertEquals("001111111", alu.integerDivision("1000", "1111", 4));
-        assertEquals("00000000100000001", alu.integerDivision("0100", "0011", 8));
     }
 
     @Test

@@ -539,7 +539,7 @@ public class ALU {
      * C1 = G1 + P1C0
      * C2 = G2 + P2 G1 + P2P1C0
      * C3 = G3 + P3G2 + P3P2G1 + P3P2P1C0
-     * C4 = G4 + P4 G3 + P4P3 G2 + P4P3 P2 G1 + P4P3 P2P1C0
+     * C4 = G4 + P4 G3 + P4P3 G2 + P4P3 P2 G1 + P4P3P2P1C0
      *
      * @param operand1 4位二进制表示的被加数
      * @param operand2 4位二进制表示的加数
@@ -697,6 +697,31 @@ public class ALU {
     }
 
     /**
+     * 带符号整数加法，可以调用{@link #adder(String, String, char, int) adder}等方法，
+     * 但不能直接将操作数转换为补码后使用{@link #integerAddition(String, String, int) integerAddition}、
+     * {@link #integerSubtraction(String, String, int) integerSubtraction}来实现。<br/>
+     * 例：signedAddition("1100", "1011", 8)
+     *
+     * @param operand1 二进制原码表示的被加数，其中第1位为符号位
+     * @param operand2 二进制原码表示的加数，其中第1位为符号位
+     * @param length   存放操作数的寄存器的长度，为4的倍数。length不小于操作数的长度（不包含符号），当某个操作数的长度小于length时，需要将其长度扩展到length
+     * @return 长度为length+2的字符串表示的计算结果，其中第1位指示是否溢出（溢出为1，否则为0），第2位为符号位，后length位是相加结果
+     */
+    public String signedAddition(String operand1, String operand2, int length) {
+        String op1 = signExtension(operand1, length);
+        String op2 = signExtension(operand2, length);
+        char sign;
+        if (op1.charAt(0) == op2.charAt(0)) {
+            sign = op1.charAt(0);
+        }
+        String fullRes = adder(op1.substring(1), op2.substring(1), '0', length);
+        char overflow = fullRes.charAt(0);
+        String res = fullRes.substring(1);
+
+        return null;
+    }
+
+    /**
      * 整数减法，可调用{@link #adder(String, String, char, int) adder}方法实现。<br/>
      * 例：integerSubtraction("0100", "0011", 8)
      *
@@ -712,6 +737,7 @@ public class ALU {
     /**
      * 整数乘法，使用Booth算法实现，可调用{@link #adder(String, String, char, int) adder}等方法。<br/>
      * 例：integerMultiplication("0100", "0011", 8)
+     * 二进制补码
      *
      * @param operand1 二进制补码表示的被乘数
      * @param operand2 二进制补码表示的乘数
@@ -736,7 +762,7 @@ public class ALU {
                 booth.rightShift();
             }
         }
-        return booth.getResult();
+        return (booth.isOverFlow() ? '1' : '0') + booth.getResult();
     }
 
     /**
@@ -770,12 +796,19 @@ public class ALU {
             setA(adder(getA(), oneAdder(negation(M)).substring(1), '0', length).substring(1));
         }
 
+        /**
+         * 这里的右移是算术右移
+         */
         public void rightShift() {
-            AQQn_1 = logRightShift(AQQn_1, 1);
+            AQQn_1 = ariRightShift(AQQn_1, 1);
         }
 
         public String getA() {
             return AQQn_1.substring(0, length);
+        }
+
+        public String getQ() {
+            return AQQn_1.substring(length);
         }
 
         public void setA(String A) {
@@ -790,8 +823,24 @@ public class ALU {
             return AQQn_1.charAt(AQQn_1.length() - 1);
         }
 
+        /**
+         * 只有当高32位全为1/0且与低32位的最高位相同时，才没有溢出；否则都有溢出
+         *
+         * @return
+         */
+        public boolean isOverFlow() {
+
+            if (allOf(getA(), '0') && getQ().charAt(0) == '0') {
+                return false;
+            } else if (allOf(getA(), '1') && getQ().charAt(0) == '1') {
+                return false;
+            } else {
+                return true;
+            }
+        }
+
         public String getResult() {
-            return AQQn_1.substring(0, AQQn_1.length() - 1);
+            return AQQn_1.substring(length, AQQn_1.length() - 1);
         }
 
         public boolean isAllZeroOrOne() {
@@ -804,6 +853,7 @@ public class ALU {
      * 整数的不恢复余数除法，可调用{@link #adder(String, String, char, int) adder}等方法实现。<br/>
      * 例：integerDivision("0100", "0011", 8)
      * 二进制原码运算
+     * n位整数除以n位整数，除-2^(n-1)/-1= 2^(n-1)会发生溢出外，其余情况都不会发生溢出
      *
      * @param operand1 二进制补码表示的被除数
      * @param operand2 二进制补码表示的除数
@@ -811,34 +861,92 @@ public class ALU {
      * @return 长度为2*length+1的字符串表示的相除结果，其中第1位指示是否溢出（溢出为1，否则为0），其后length位为商，最后length位为余数
      */
     public String integerDivision(String operand1, String operand2, int length) {
-        String op1 = signExtension(operand1,length);
-        String op2 = signExtension(operand2,length);
-        if()
-        return null;
+        String op1 = signExtension(operand1, length);
+        String op2 = signExtension(operand2, length);
+
+        char overflow;
+        //如果除数为0，那么返回NaN
+        if (allOf(op2.substring(1), '0')) {
+            return "NaN";
+        }
+
+        //如果被除数为0，那么直接返回0
+        if (allOf(op1.substring(1), '0')) {
+            return generateChars('0', length);
+        }
+
+        //如果被除数是-2^(n-1)，二进制原码为全1，且除数为-1，则溢出
+        //溢出后
+        if (allOf(op1, '1') && trueFormToSignedDec(op2).equals("-1")) {
+            overflow = '1';
+        } else {
+            overflow = '0';
+        }
+
+        //计算正常情况
+        NonRestoringRemainder nrr = new NonRestoringRemainder(op1, op2);
+        boolean nextAdd = false;
+        for (int i = 0; i < length; i++) {
+            //先进行操作，第一次操作默认是减
+            if (nextAdd) {
+                nrr.addToR();
+            } else {
+                nrr.subFromR();
+            }
+            //操作结果R如果是正数，那么上商1，并且下次做减法
+            if (nrr.isRPositive()) {
+                nrr.carry('1');
+                nextAdd = false;
+            } else {
+                //操作结果R如果是负数，那么上商0，并且下次做加法
+                nrr.carry('0');
+                nextAdd = true;
+            }
+            //左移，最后一次不再左移
+            if (i != length - 1) {
+                nrr.leftShift();
+            }
+        }
+        return overflow + nrr.getResult();
+    }
+
+    public String abs(String num) {
+        return '0' + num.substring(1);
     }
 
     /**
      * 不恢复余数法辅助类
      * R初始值是被除数
      * Y是除数
+     * 实际计算时需要将R和Y的符号位全部置为0，即先取绝对值后运算
      * 结果R是余数
-     * Q是除数
+     * Q是商
      */
     private class NonRestoringRemainder {
         private String R;
         private String Y;
         private String RQ;
         private int length;
+        //商的符号位为两个操作数的符号位的异或
+        private char quotientSign;
+        //余数的符号位为被除数的符号位
+        private char remainderSign;
 
         NonRestoringRemainder(String R, String Y) {
-            this.R = R;
-            this.Y = Y;
+            this.R = abs(R);
+            this.Y = abs(Y);
             this.length = R.length();
             StringBuilder sb = new StringBuilder();
             for (int i = 0; i < length; i++) {
                 sb.append('0');
             }
             this.RQ = R + sb.toString();
+            this.quotientSign = xor(R.charAt(0), Y.charAt(0));
+            this.remainderSign = R.charAt(0);
+        }
+
+        public void carry(char c) {
+            this.RQ = this.RQ.substring(0, RQ.length() - 1) + c;
         }
 
         public String getR() {
@@ -847,6 +955,14 @@ public class ALU {
 
         public void setR(String R) {
             this.RQ = R + RQ.substring(length);
+        }
+
+        public String getQ() {
+            return RQ.substring(length);
+        }
+
+        public void addToR() {
+            setR(adder(getR(), Y, '0', length).substring(1));
         }
 
         public void subFromR() {
@@ -861,28 +977,32 @@ public class ALU {
             this.RQ = ALU.this.leftShift(RQ, 1);
         }
 
+        /**
+         * 商在前，余数在后
+         * 如果被除数和除数符号位相同，那么计算的商就是结果
+         * 如果不同，那么需要将计算的商取补，即取反加1
+         *
+         * @return
+         */
         public String getResult() {
-            return RQ.substring(length) + RQ.substring(0, length);
+            System.out.println("商:" + getQ());
+            System.out.println("余数:" + getR());
+            String quotient;
+            String remainder;
+            if (quotientSign == '1') {
+                quotient = oneAdder(negation(getQ())).substring(1);
+            } else {
+                quotient = getQ();
+            }
+            if (remainderSign == '1') {
+                remainder = oneAdder(negation(getR())).substring(1);
+            } else {
+                remainder = getR();
+            }
+            return quotient + remainder;
         }
-
-
     }
 
-    /**
-     * 带符号整数加法，可以调用{@link #adder(String, String, char, int) adder}等方法，
-     * 但不能直接将操作数转换为补码后使用{@link #integerAddition(String, String, int) integerAddition}、
-     * {@link #integerSubtraction(String, String, int) integerSubtraction}来实现。<br/>
-     * 例：signedAddition("1100", "1011", 8)
-     *
-     * @param operand1 二进制原码表示的被加数，其中第1位为符号位
-     * @param operand2 二进制原码表示的加数，其中第1位为符号位
-     * @param length   存放操作数的寄存器的长度，为4的倍数。length不小于操作数的长度（不包含符号），当某个操作数的长度小于length时，需要将其长度扩展到length
-     * @return 长度为length+2的字符串表示的计算结果，其中第1位指示是否溢出（溢出为1，否则为0），第2位为符号位，后length位是相加结果
-     */
-    public String signedAddition(String operand1, String operand2, int length) {
-        // TODO YOUR CODE HERE.
-        return null;
-    }
 
     /**
      * 浮点数加法，可调用{@link #signedAddition(String, String, int) signedAddition}等方法实现。<br/>
