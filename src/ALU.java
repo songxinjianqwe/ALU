@@ -7,7 +7,6 @@ import java.math.BigDecimal;
  */
 
 public class ALU {
-    private static String _127 = "01111111";
 
     /**
      * 与门
@@ -98,6 +97,7 @@ public class ALU {
             return '1' + oneAdder('0' + negation(complement.substring(1))).substring(1);
         }
     }
+
 
     /**
      * 二进制原码小数转十进制
@@ -724,20 +724,19 @@ public class ALU {
         String op2 = signExtension(operand2, length);
         Booth booth = new Booth(op1, op2);
         for (int i = 0; i < length; i++) {
-            if(booth.isAllZeroOrOne()){
+            if (booth.isAllZeroOrOne()) {
                 //全为0或全为1
                 booth.rightShift();
-            }else{
-                if(booth.Q0() == 0 && booth.Qn_1() == 1){
+            } else {
+                if (booth.Q0() == '0' && booth.Qn_1() == '1') {
                     booth.addToA();
-                }else if(booth.Q0() == 1 && booth.Qn_1() == 0){
+                } else if (booth.Q0() == '1' && booth.Qn_1() == '0') {
                     booth.subFromA();
                 }
                 booth.rightShift();
             }
         }
-        System.out.println(booth.getResult());
-        return null;
+        return booth.getResult();
     }
 
     /**
@@ -794,18 +793,17 @@ public class ALU {
         public String getResult() {
             return AQQn_1.substring(0, AQQn_1.length() - 1);
         }
-        
-        public boolean isAllZeroOrOne(){
-            return (Q0() == 0 && Qn_1() == 0) || (Q0() == 1 && Qn_1() == 1);
-        }
 
-        
+        public boolean isAllZeroOrOne() {
+            return (Q0() == '0' && Qn_1() == '0') || (Q0() == '1' && Qn_1() == '1');
+        }
     }
 
 
     /**
      * 整数的不恢复余数除法，可调用{@link #adder(String, String, char, int) adder}等方法实现。<br/>
      * 例：integerDivision("0100", "0011", 8)
+     * 二进制原码运算
      *
      * @param operand1 二进制补码表示的被除数
      * @param operand2 二进制补码表示的除数
@@ -813,8 +811,61 @@ public class ALU {
      * @return 长度为2*length+1的字符串表示的相除结果，其中第1位指示是否溢出（溢出为1，否则为0），其后length位为商，最后length位为余数
      */
     public String integerDivision(String operand1, String operand2, int length) {
-        // TODO YOUR CODE HERE.
+        String op1 = signExtension(operand1,length);
+        String op2 = signExtension(operand2,length);
+        if()
         return null;
+    }
+
+    /**
+     * 不恢复余数法辅助类
+     * R初始值是被除数
+     * Y是除数
+     * 结果R是余数
+     * Q是除数
+     */
+    private class NonRestoringRemainder {
+        private String R;
+        private String Y;
+        private String RQ;
+        private int length;
+
+        NonRestoringRemainder(String R, String Y) {
+            this.R = R;
+            this.Y = Y;
+            this.length = R.length();
+            StringBuilder sb = new StringBuilder();
+            for (int i = 0; i < length; i++) {
+                sb.append('0');
+            }
+            this.RQ = R + sb.toString();
+        }
+
+        public String getR() {
+            return RQ.substring(0, length);
+        }
+
+        public void setR(String R) {
+            this.RQ = R + RQ.substring(length);
+        }
+
+        public void subFromR() {
+            setR(adder(getR(), oneAdder(negation(Y)).substring(1), '0', length).substring(1));
+        }
+
+        public boolean isRPositive() {
+            return RQ.charAt(0) == '0';
+        }
+
+        public void leftShift() {
+            this.RQ = ALU.this.leftShift(RQ, 1);
+        }
+
+        public String getResult() {
+            return RQ.substring(length) + RQ.substring(0, length);
+        }
+
+
     }
 
     /**
