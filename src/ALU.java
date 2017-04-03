@@ -701,7 +701,7 @@ public class ALU {
      * 但不能直接将操作数转换为补码后使用{@link #integerAddition(String, String, int) integerAddition}、
      * {@link #integerSubtraction(String, String, int) integerSubtraction}来实现。<br/>
      * 例：signedAddition("1100", "1011", 8)
-     *
+     * 
      * @param operand1 二进制原码表示的被加数，其中第1位为符号位
      * @param operand2 二进制原码表示的加数，其中第1位为符号位
      * @param length   存放操作数的寄存器的长度，为4的倍数。length不小于操作数的长度（不包含符号），当某个操作数的长度小于length时，需要将其长度扩展到length
@@ -717,7 +717,7 @@ public class ALU {
         String fullRes = adder(op1.substring(1), op2.substring(1), '0', length);
         char overflow = fullRes.charAt(0);
         String res = fullRes.substring(1);
-
+        
         return null;
     }
 
@@ -852,7 +852,6 @@ public class ALU {
     /**
      * 整数的不恢复余数除法，可调用{@link #adder(String, String, char, int) adder}等方法实现。<br/>
      * 例：integerDivision("0100", "0011", 8)
-     * 二进制原码运算
      * n位整数除以n位整数，除-2^(n-1)/-1= 2^(n-1)会发生溢出外，其余情况都不会发生溢出
      *
      * @param operand1 二进制补码表示的被除数
@@ -861,92 +860,84 @@ public class ALU {
      * @return 长度为2*length+1的字符串表示的相除结果，其中第1位指示是否溢出（溢出为1，否则为0），其后length位为商，最后length位为余数
      */
     public String integerDivision(String operand1, String operand2, int length) {
-        String op1 = signExtension(operand1, length);
-        String op2 = signExtension(operand2, length);
+        String dividend = signExtension(operand1, length);
+        String divisor = signExtension(operand2, length);
 
-        char overflow;
         //如果除数为0，那么返回NaN
-        if (allOf(op2.substring(1), '0')) {
+        if (allOf(divisor.substring(1), '0')) {
             return "NaN";
         }
 
         //如果被除数为0，那么直接返回0
-        if (allOf(op1.substring(1), '0')) {
-            return generateChars('0', length);
+        if (allOf(dividend, '0')) {
+            return generateChars('0', 2 * length + 1);
         }
-
-        //如果被除数是-2^(n-1)，二进制原码为全1，且除数为-1，则溢出
-        //溢出后
-        if (allOf(op1, '1') && trueFormToSignedDec(op2).equals("-1")) {
-            overflow = '1';
-        } else {
-            overflow = '0';
+        
+        //这个是-2^(n-1)的二进制补码表示
+        String _2n_1 = '1' + generateChars('0', length - 2) + '1';
+        //如果被除数是-2^(n-1)，二进制补码为10000....0001，且除数为-1，二进制补码为全1，则溢出
+        if (dividend.equals(_2n_1) && allOf(divisor, '1')) {
+            return '1' + _2n_1;
         }
-
+        
         //计算正常情况
-        NonRestoringRemainder nrr = new NonRestoringRemainder(op1, op2);
-        boolean nextAdd = false;
-        for (int i = 0; i < length; i++) {
-            //先进行操作，第一次操作默认是减
-            if (nextAdd) {
-                nrr.addToR();
-            } else {
+        NonRestoringRemainder nrr = new NonRestoringRemainder(dividend, divisor);
+        //第一次加减操作由被除数和除数的符号决定，同号做加法，异号做加法
+        boolean nextSub = isSameSign(dividend, divisor);
+        //循环n+1次，最后一次不进行左移
+        for (int i = 0; i < length + 1; i++) {
+            if (nextSub) {
                 nrr.subFromR();
-            }
-            //操作结果R如果是正数，那么上商1，并且下次做减法
-            if (nrr.isRPositive()) {
-                nrr.carry('1');
-                nextAdd = false;
             } else {
-                //操作结果R如果是负数，那么上商0，并且下次做加法
-                nrr.carry('0');
-                nextAdd = true;
+                nrr.addToR();
             }
-            //左移，最后一次不再左移
-            if (i != length - 1) {
+            //运算后，如果余数和除数同号，那么商1，下次做减法
+            if (isSameSign(nrr.getR(), divisor)) {
+                nrr.carry('1');
+                nextSub = true;
+            } else {
+                //如果余数和除数异号，那么商0，下次做加法
+                nrr.carry('0');
+                nextSub = false;
+            }
+            if (i != length) {
                 nrr.leftShift();
             }
         }
-        return overflow + nrr.getResult();
+        return '0' + nrr.getResult();
     }
 
-    public String abs(String num) {
-        return '0' + num.substring(1);
+    /**
+     * 判断两个二进制补码是否同号
+     *
+     * @param op1
+     * @param op2
+     * @return
+     */
+    public boolean isSameSign(String op1, String op2) {
+        return op1.charAt(0) == op2.charAt(0);
     }
 
     /**
      * 不恢复余数法辅助类
-     * R初始值是被除数
-     * Y是除数
-     * 实际计算时需要将R和Y的符号位全部置为0，即先取绝对值后运算
-     * 结果R是余数
-     * Q是商
+     * 初始化时传入X和Y
+     * X是被除数，Y是除数
+     * R是余数寄存器，Q是商寄存器
+     * RQ初始值是X进行2n位的符号扩展之后的值，高n位放到R中，低n位放到Q中
+     * 结果R是余数，Q是商
      */
     private class NonRestoringRemainder {
-        private String R;
-        private String Y;
+        private String dividend;
+        private String divisor;
         private String RQ;
         private int length;
-        //商的符号位为两个操作数的符号位的异或
-        private char quotientSign;
-        //余数的符号位为被除数的符号位
-        private char remainderSign;
+        private char carry;
 
-        NonRestoringRemainder(String R, String Y) {
-            this.R = abs(R);
-            this.Y = abs(Y);
-            this.length = R.length();
-            StringBuilder sb = new StringBuilder();
-            for (int i = 0; i < length; i++) {
-                sb.append('0');
-            }
-            this.RQ = R + sb.toString();
-            this.quotientSign = xor(R.charAt(0), Y.charAt(0));
-            this.remainderSign = R.charAt(0);
-        }
-
-        public void carry(char c) {
-            this.RQ = this.RQ.substring(0, RQ.length() - 1) + c;
+        NonRestoringRemainder(String dividend, String divisor) {
+            this.dividend = dividend;
+            this.divisor = divisor;
+            this.RQ = signExtension(dividend, dividend.length() * 2);
+            this.length = dividend.length();
         }
 
         public String getR() {
@@ -962,45 +953,44 @@ public class ALU {
         }
 
         public void addToR() {
-            setR(adder(getR(), Y, '0', length).substring(1));
+            setR(adder(getR(), divisor, '0', length).substring(1));
+        }
+
+        public void carry(char carry) {
+            this.carry = carry;
         }
 
         public void subFromR() {
-            setR(adder(getR(), oneAdder(negation(Y)).substring(1), '0', length).substring(1));
-        }
-
-        public boolean isRPositive() {
-            return RQ.charAt(0) == '0';
+            setR(adder(getR(), oneAdder(negation(divisor)).substring(1), '0', length).substring(1));
         }
 
         public void leftShift() {
-            this.RQ = ALU.this.leftShift(RQ, 1);
+            this.RQ = RQ.substring(1) + carry;
         }
 
         /**
          * 商在前，余数在后
-         * 如果被除数和除数符号位相同，那么计算的商就是结果
-         * 如果不同，那么需要将计算的商取补，即取反加1
          *
          * @return
          */
         public String getResult() {
-            System.out.println("商:" + getQ());
-            System.out.println("余数:" + getR());
-            String quotient;
-            String remainder;
-            if (quotientSign == '1') {
-                quotient = oneAdder(negation(getQ())).substring(1);
-            } else {
-                quotient = getQ();
+            //最后一次只对商移位
+            String quotient = getQ().substring(1) + carry;
+            //如果移位后商<0，那么商 += 1
+            if (quotient.charAt(0) == '1') {
+                quotient = oneAdder(quotient).substring(1);
             }
-            if (remainderSign == '1') {
-                remainder = oneAdder(negation(getR())).substring(1);
-            } else {
-                remainder = getR();
+            //在余数和被除数异号的前提下，如果被除数和除数同号，那么余数+=除数；异号，余数-=除数
+            if (!isSameSign(getR(), dividend)) {
+                if (isSameSign(dividend, divisor)) {
+                    addToR();
+                } else {
+                    subFromR();
+                }
             }
-            return quotient + remainder;
+            return quotient + getR();
         }
+
     }
 
 

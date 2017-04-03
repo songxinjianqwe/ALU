@@ -246,6 +246,9 @@ public class ALUTest {
         assertEquals("00000000100000001", alu.integerDivision("0100", "0011", 8));
         assertEquals("000010001", alu.integerDivision("0100", "0011", 4));
         
+        assertEquals("NaN", alu.integerDivision("1111", "0000", 4));
+        assertEquals("110000001", alu.integerDivision("10000001", "11111111", 8));
+        
         assertEquals("000000000", alu.integerDivision("0000", "0011", 4));
         assertEquals("01111111011111111", alu.integerDivision("1001", "0011", 8));
         assertEquals("011101111", alu.integerDivision("1001", "0011", 4));
