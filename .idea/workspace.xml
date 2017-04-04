@@ -214,8 +214,8 @@
       <file leaf-file-name="ALU.java" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/ALU.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="204">
-              <caret line="1177" column="26" lean-forward="false" selection-start-line="1177" selection-start-column="26" selection-end-line="1177" selection-end-column="26" />
+            <state relative-caret-position="178">
+              <caret line="1174" column="15" lean-forward="false" selection-start-line="1174" selection-start-column="15" selection-end-line="1174" selection-end-column="15" />
               <folding />
             </state>
           </provider>
@@ -224,8 +224,8 @@
       <file leaf-file-name="ALUTest.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/ALUTest.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="81">
-              <caret line="276" column="0" lean-forward="false" selection-start-line="276" selection-start-column="0" selection-end-line="276" selection-end-column="0" />
+            <state relative-caret-position="7128">
+              <caret line="297" column="5" lean-forward="false" selection-start-line="297" selection-start-column="5" selection-end-line="297" selection-end-column="5" />
               <folding>
                 <element signature="imports" expanded="true" />
               </folding>
@@ -246,8 +246,33 @@
       <file leaf-file-name="ParentRunner.java" pinned="false" current-in-tab="false">
         <entry file="jar://$USER_HOME$/.ideaLibSources/junit-4.12-sources.jar!/org/junit/runners/ParentRunner.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="167">
-              <caret line="328" column="0" lean-forward="false" selection-start-line="328" selection-start-column="0" selection-end-line="328" selection-end-column="0" />
+            <state relative-caret-position="218">
+              <caret line="370" column="0" lean-forward="false" selection-start-line="370" selection-start-column="0" selection-end-line="370" selection-end-column="0" />
+              <folding>
+                <element signature="e#10310#10449#0" expanded="true" />
+                <element signature="e#10448#10449#0" expanded="true" />
+                <element signature="e#11040#11204#0" expanded="true" />
+                <element signature="e#11203#11204#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="JUnitCore.java" pinned="false" current-in-tab="false">
+        <entry file="jar://$USER_HOME$/.ideaLibSources/junit-4.12-sources.jar!/org/junit/runner/JUnitCore.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="265">
+              <caret line="141" column="0" lean-forward="false" selection-start-line="141" selection-start-column="0" selection-end-line="141" selection-end-column="0" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="BlockJUnit4ClassRunner.java" pinned="false" current-in-tab="false">
+        <entry file="jar://$USER_HOME$/.ideaLibSources/junit-4.12-sources.jar!/org/junit/runners/BlockJUnit4ClassRunner.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="164">
+              <caret line="79" column="0" lean-forward="false" selection-start-line="79" selection-start-column="0" selection-end-line="79" selection-end-column="0" />
               <folding />
             </state>
           </provider>
@@ -381,28 +406,7 @@
       </list>
     </option>
   </component>
-  <component name="RunManager" selected="JUnit.ALUTest.floatAdditionTest">
-    <configuration default="false" name="ALUTest.integerDivisionTest" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
-      <extension name="coverage" enabled="false" merge="false" sample_coverage="true" runner="idea" />
-      <module name="ALU" />
-      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
-      <option name="ALTERNATIVE_JRE_PATH" />
-      <option name="PACKAGE_NAME" value="" />
-      <option name="MAIN_CLASS_NAME" value="ALUTest" />
-      <option name="METHOD_NAME" value="integerDivisionTest" />
-      <option name="TEST_OBJECT" value="method" />
-      <option name="VM_PARAMETERS" value="-ea" />
-      <option name="PARAMETERS" />
-      <option name="WORKING_DIRECTORY" value="$MODULE_DIR$" />
-      <option name="ENV_VARIABLES" />
-      <option name="PASS_PARENT_ENVS" value="true" />
-      <option name="TEST_SEARCH_SCOPE">
-        <value defaultName="singleModule" />
-      </option>
-      <envs />
-      <patterns />
-      <method />
-    </configuration>
+  <component name="RunManager" selected="JUnit.ALUTest">
     <configuration default="false" name="ALUTest.signedAdditionTest" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
       <extension name="coverage" enabled="false" merge="false" sample_coverage="true" runner="idea" />
       <module name="ALU" />
@@ -411,27 +415,6 @@
       <option name="PACKAGE_NAME" value="" />
       <option name="MAIN_CLASS_NAME" value="ALUTest" />
       <option name="METHOD_NAME" value="signedAdditionTest" />
-      <option name="TEST_OBJECT" value="method" />
-      <option name="VM_PARAMETERS" value="-ea" />
-      <option name="PARAMETERS" />
-      <option name="WORKING_DIRECTORY" value="$MODULE_DIR$" />
-      <option name="ENV_VARIABLES" />
-      <option name="PASS_PARENT_ENVS" value="true" />
-      <option name="TEST_SEARCH_SCOPE">
-        <value defaultName="singleModule" />
-      </option>
-      <envs />
-      <patterns />
-      <method />
-    </configuration>
-    <configuration default="false" name="ALUTest.integerSubtractionTest" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
-      <extension name="coverage" enabled="false" merge="false" sample_coverage="true" runner="idea" />
-      <module name="ALU" />
-      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
-      <option name="ALTERNATIVE_JRE_PATH" />
-      <option name="PACKAGE_NAME" value="" />
-      <option name="MAIN_CLASS_NAME" value="ALUTest" />
-      <option name="METHOD_NAME" value="integerSubtractionTest" />
       <option name="TEST_OBJECT" value="method" />
       <option name="VM_PARAMETERS" value="-ea" />
       <option name="PARAMETERS" />
@@ -475,6 +458,48 @@
       <option name="MAIN_CLASS_NAME" value="ALUTest" />
       <option name="METHOD_NAME" value="floatAdditionTest" />
       <option name="TEST_OBJECT" value="method" />
+      <option name="VM_PARAMETERS" value="-ea" />
+      <option name="PARAMETERS" />
+      <option name="WORKING_DIRECTORY" value="$MODULE_DIR$" />
+      <option name="ENV_VARIABLES" />
+      <option name="PASS_PARENT_ENVS" value="true" />
+      <option name="TEST_SEARCH_SCOPE">
+        <value defaultName="singleModule" />
+      </option>
+      <envs />
+      <patterns />
+      <method />
+    </configuration>
+    <configuration default="false" name="ALUTest.floatSubtractionTest" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+      <extension name="coverage" enabled="false" merge="false" sample_coverage="true" runner="idea" />
+      <module name="ALU" />
+      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
+      <option name="ALTERNATIVE_JRE_PATH" />
+      <option name="PACKAGE_NAME" value="" />
+      <option name="MAIN_CLASS_NAME" value="ALUTest" />
+      <option name="METHOD_NAME" value="floatSubtractionTest" />
+      <option name="TEST_OBJECT" value="method" />
+      <option name="VM_PARAMETERS" value="-ea" />
+      <option name="PARAMETERS" />
+      <option name="WORKING_DIRECTORY" value="$MODULE_DIR$" />
+      <option name="ENV_VARIABLES" />
+      <option name="PASS_PARENT_ENVS" value="true" />
+      <option name="TEST_SEARCH_SCOPE">
+        <value defaultName="singleModule" />
+      </option>
+      <envs />
+      <patterns />
+      <method />
+    </configuration>
+    <configuration default="false" name="ALUTest" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+      <extension name="coverage" enabled="false" merge="false" sample_coverage="true" runner="idea" />
+      <module name="ALU" />
+      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
+      <option name="ALTERNATIVE_JRE_PATH" />
+      <option name="PACKAGE_NAME" value="" />
+      <option name="MAIN_CLASS_NAME" value="ALUTest" />
+      <option name="METHOD_NAME" />
+      <option name="TEST_OBJECT" value="class" />
       <option name="VM_PARAMETERS" value="-ea" />
       <option name="PARAMETERS" />
       <option name="WORKING_DIRECTORY" value="$MODULE_DIR$" />
@@ -948,19 +973,19 @@
       <method />
     </configuration>
     <list size="5">
-      <item index="0" class="java.lang.String" itemvalue="JUnit.ALUTest.integerDivisionTest" />
-      <item index="1" class="java.lang.String" itemvalue="JUnit.ALUTest.signedAdditionTest" />
-      <item index="2" class="java.lang.String" itemvalue="JUnit.ALUTest.integerSubtractionTest" />
-      <item index="3" class="java.lang.String" itemvalue="JUnit.ALUTest.integerRepresentationTest" />
-      <item index="4" class="java.lang.String" itemvalue="JUnit.ALUTest.floatAdditionTest" />
+      <item index="0" class="java.lang.String" itemvalue="JUnit.ALUTest.signedAdditionTest" />
+      <item index="1" class="java.lang.String" itemvalue="JUnit.ALUTest.integerRepresentationTest" />
+      <item index="2" class="java.lang.String" itemvalue="JUnit.ALUTest.floatAdditionTest" />
+      <item index="3" class="java.lang.String" itemvalue="JUnit.ALUTest.floatSubtractionTest" />
+      <item index="4" class="java.lang.String" itemvalue="JUnit.ALUTest" />
     </list>
     <recent_temporary>
       <list size="5">
-        <item index="0" class="java.lang.String" itemvalue="JUnit.ALUTest.floatAdditionTest" />
-        <item index="1" class="java.lang.String" itemvalue="JUnit.ALUTest.signedAdditionTest" />
-        <item index="2" class="java.lang.String" itemvalue="JUnit.ALUTest.integerRepresentationTest" />
-        <item index="3" class="java.lang.String" itemvalue="JUnit.ALUTest.integerSubtractionTest" />
-        <item index="4" class="java.lang.String" itemvalue="JUnit.ALUTest.integerDivisionTest" />
+        <item index="0" class="java.lang.String" itemvalue="JUnit.ALUTest" />
+        <item index="1" class="java.lang.String" itemvalue="JUnit.ALUTest.floatAdditionTest" />
+        <item index="2" class="java.lang.String" itemvalue="JUnit.ALUTest.floatSubtractionTest" />
+        <item index="3" class="java.lang.String" itemvalue="JUnit.ALUTest.signedAdditionTest" />
+        <item index="4" class="java.lang.String" itemvalue="JUnit.ALUTest.integerRepresentationTest" />
       </list>
     </recent_temporary>
   </component>
@@ -994,7 +1019,7 @@
       <workItem from="1491186493505" duration="630000" />
       <workItem from="1491188932141" duration="4675000" />
       <workItem from="1491204488418" duration="19679000" />
-      <workItem from="1491270761496" duration="22893000" />
+      <workItem from="1491270761496" duration="30286000" />
     </task>
     <task id="LOCAL-00001" summary="模拟ALU">
       <created>1490888139331</created>
@@ -1014,39 +1039,39 @@
     <servers />
   </component>
   <component name="TestHistory">
-    <history-entry file="ALUTest_floatAdditionTest - 2017.04.04 at 17h 51m 04s.xml">
+    <history-entry file="ALUTest - 2017.04.04 at 23h 14m 25s.xml">
+      <configuration name="ALUTest" configurationId="JUnit" />
+    </history-entry>
+    <history-entry file="ALUTest_floatAdditionTest - 2017.04.04 at 23h 13m 32s.xml">
       <configuration name="ALUTest.floatAdditionTest" configurationId="JUnit" />
     </history-entry>
-    <history-entry file="ALUTest_floatAdditionTest - 2017.04.04 at 17h 52m 11s.xml">
+    <history-entry file="ALUTest_floatAdditionTest - 2017.04.04 at 23h 14m 06s.xml">
       <configuration name="ALUTest.floatAdditionTest" configurationId="JUnit" />
     </history-entry>
-    <history-entry file="ALUTest_floatAdditionTest - 2017.04.04 at 17h 56m 07s.xml">
-      <configuration name="ALUTest.floatAdditionTest" configurationId="JUnit" />
+    <history-entry file="ALUTest_floatSubtractionTest - 2017.04.04 at 23h 05m 15s.xml">
+      <configuration name="ALUTest.floatSubtractionTest" configurationId="JUnit" />
     </history-entry>
-    <history-entry file="ALUTest_floatAdditionTest - 2017.04.04 at 18h 00m 05s.xml">
-      <configuration name="ALUTest.floatAdditionTest" configurationId="JUnit" />
+    <history-entry file="ALUTest_floatSubtractionTest - 2017.04.04 at 23h 11m 57s.xml">
+      <configuration name="ALUTest.floatSubtractionTest" configurationId="JUnit" />
     </history-entry>
-    <history-entry file="ALUTest_floatAdditionTest - 2017.04.04 at 18h 00m 10s.xml">
-      <configuration name="ALUTest.floatAdditionTest" configurationId="JUnit" />
+    <history-entry file="ALUTest_floatSubtractionTest - 2017.04.04 at 23h 12m 08s.xml">
+      <configuration name="ALUTest.floatSubtractionTest" configurationId="JUnit" />
     </history-entry>
-    <history-entry file="ALUTest_floatAdditionTest - 2017.04.04 at 18h 04m 58s.xml">
-      <configuration name="ALUTest.floatAdditionTest" configurationId="JUnit" />
+    <history-entry file="ALUTest_floatSubtractionTest - 2017.04.04 at 23h 13m 09s.xml">
+      <configuration name="ALUTest.floatSubtractionTest" configurationId="JUnit" />
     </history-entry>
-    <history-entry file="ALUTest_floatAdditionTest - 2017.04.04 at 18h 06m 16s.xml">
-      <configuration name="ALUTest.floatAdditionTest" configurationId="JUnit" />
+    <history-entry file="ALUTest_floatSubtractionTest - 2017.04.04 at 23h 13m 14s.xml">
+      <configuration name="ALUTest.floatSubtractionTest" configurationId="JUnit" />
     </history-entry>
-    <history-entry file="ALUTest_floatAdditionTest - 2017.04.04 at 18h 06m 28s.xml">
-      <configuration name="ALUTest.floatAdditionTest" configurationId="JUnit" />
+    <history-entry file="ALUTest_floatSubtractionTest - 2017.04.04 at 23h 13m 23s.xml">
+      <configuration name="ALUTest.floatSubtractionTest" configurationId="JUnit" />
     </history-entry>
-    <history-entry file="ALUTest_floatAdditionTest - 2017.04.04 at 18h 06m 33s.xml">
-      <configuration name="ALUTest.floatAdditionTest" configurationId="JUnit" />
-    </history-entry>
-    <history-entry file="ALUTest_floatAdditionTest - 2017.04.04 at 18h 07m 10s.xml">
-      <configuration name="ALUTest.floatAdditionTest" configurationId="JUnit" />
+    <history-entry file="ALUTest_floatSubtractionTest - 2017.04.04 at 23h 13m 27s.xml">
+      <configuration name="ALUTest.floatSubtractionTest" configurationId="JUnit" />
     </history-entry>
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="104973000" />
+    <option name="totallyTimeSpent" value="112366000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="-11" y="-11" width="1942" height="1042" extended-state="6" />
@@ -1063,14 +1088,14 @@
       <window_info id="Structure" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.1703125" sideWeight="0.4858871" order="11" side_tool="false" content_ui="tabs" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="9" side_tool="false" content_ui="tabs" />
       <window_info id="UI Designer" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
-      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.22234891" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.49486887" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.07753706" sideWeight="0.5" order="10" side_tool="false" content_ui="tabs" />
       <window_info id="Palette&#9;" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Image Layers" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Capture Analysis" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.39680728" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="true" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.25313568" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Coverage" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.1703125" sideWeight="0.5141129" order="5" side_tool="true" content_ui="tabs" />
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="9" side_tool="false" content_ui="tabs" />
       <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.1609375" sideWeight="0.5" order="6" side_tool="false" content_ui="combo" />
@@ -1099,13 +1124,19 @@
     <breakpoint-manager>
       <breakpoints>
         <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/src/ALUTest.java</url>
-          <line>276</line>
+          <url>file://$PROJECT_DIR$/src/ALU.java</url>
+          <line>1178</line>
           <properties />
-          <option name="timeStamp" value="66" />
+          <option name="timeStamp" value="69" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/ALUTest.java</url>
+          <line>297</line>
+          <properties />
+          <option name="timeStamp" value="75" />
         </line-breakpoint>
       </breakpoints>
-      <option name="time" value="67" />
+      <option name="time" value="76" />
     </breakpoint-manager>
     <watches-manager />
   </component>
@@ -1461,26 +1492,21 @@
         </state>
       </provider>
     </entry>
-    <entry file="jar://$USER_HOME$/.ideaLibSources/junit-4.12-sources.jar!/org/junit/runners/BlockJUnit4ClassRunner.java">
+    <entry file="jar://$USER_HOME$/.ideaLibSources/junit-4.12-sources.jar!/org/junit/runners/model/FrameworkMethod.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="164">
-          <caret line="79" column="0" lean-forward="false" selection-start-line="79" selection-start-column="0" selection-end-line="79" selection-end-column="0" />
-          <folding />
+        <state relative-caret-position="134">
+          <caret line="46" column="0" lean-forward="false" selection-start-line="46" selection-start-column="0" selection-end-line="46" selection-end-column="0" />
+          <folding>
+            <element signature="e#1464#1658#0" expanded="true" />
+            <element signature="e#1657#1658#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
-    <entry file="jar://$USER_HOME$/.ideaLibSources/junit-4.12-sources.jar!/org/junit/runner/JUnitCore.java">
+    <entry file="jar://$USER_HOME$/.ideaLibSources/junit-4.12-sources.jar!/org/junit/internal/runners/statements/InvokeMethod.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="265">
-          <caret line="141" column="0" lean-forward="false" selection-start-line="141" selection-start-column="0" selection-end-line="141" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="jar://$USER_HOME$/.ideaLibSources/junit-4.12-sources.jar!/org/junit/runners/ParentRunner.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="167">
-          <caret line="328" column="0" lean-forward="false" selection-start-line="328" selection-start-column="0" selection-end-line="328" selection-end-column="0" />
+        <state relative-caret-position="384">
+          <caret line="17" column="0" lean-forward="false" selection-start-line="17" selection-start-column="0" selection-end-line="17" selection-end-column="0" />
           <folding />
         </state>
       </provider>
@@ -1493,10 +1519,39 @@
         </state>
       </provider>
     </entry>
+    <entry file="jar://$USER_HOME$/.ideaLibSources/junit-4.12-sources.jar!/org/junit/runners/BlockJUnit4ClassRunner.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="164">
+          <caret line="79" column="0" lean-forward="false" selection-start-line="79" selection-start-column="0" selection-end-line="79" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://$USER_HOME$/.ideaLibSources/junit-4.12-sources.jar!/org/junit/runners/ParentRunner.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="218">
+          <caret line="370" column="0" lean-forward="false" selection-start-line="370" selection-start-column="0" selection-end-line="370" selection-end-column="0" />
+          <folding>
+            <element signature="e#10310#10449#0" expanded="true" />
+            <element signature="e#10448#10449#0" expanded="true" />
+            <element signature="e#11040#11204#0" expanded="true" />
+            <element signature="e#11203#11204#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://$USER_HOME$/.ideaLibSources/junit-4.12-sources.jar!/org/junit/runner/JUnitCore.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="265">
+          <caret line="141" column="0" lean-forward="false" selection-start-line="141" selection-start-column="0" selection-end-line="141" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/src/ALUTest.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="81">
-          <caret line="276" column="0" lean-forward="false" selection-start-line="276" selection-start-column="0" selection-end-line="276" selection-end-column="0" />
+        <state relative-caret-position="7128">
+          <caret line="297" column="5" lean-forward="false" selection-start-line="297" selection-start-column="5" selection-end-line="297" selection-end-column="5" />
           <folding>
             <element signature="imports" expanded="true" />
           </folding>
@@ -1505,8 +1560,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/ALU.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="204">
-          <caret line="1177" column="26" lean-forward="false" selection-start-line="1177" selection-start-column="26" selection-end-line="1177" selection-end-column="26" />
+        <state relative-caret-position="178">
+          <caret line="1174" column="15" lean-forward="false" selection-start-line="1174" selection-start-column="15" selection-end-line="1174" selection-end-column="15" />
           <folding />
         </state>
       </provider>
