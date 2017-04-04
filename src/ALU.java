@@ -76,9 +76,9 @@ public class ALU {
             return "";
         }
         if (number.charAt(0) == '-') {
-            return signExtension(oneAdder(negation(toInteger(number.substring(1)))).substring(1), length, '1');
+            return signExtension(complete(DecToTrueForm(number.substring(1))), length, '1');
         } else {
-            return signExtension(toInteger(number), length, '0');
+            return signExtension(DecToTrueForm(number), length, '0');
         }
     }
 
@@ -141,20 +141,38 @@ public class ALU {
     }
 
     /**
+     * 将参数取补，即取反加一，不返回加一的溢出位
+     *
+     * @param num
+     * @return
+     */
+    public String complete(String num) {
+        return oneAdder(negation(num)).substring(1);
+    }
+
+    /**
      * 十进制整数转二进制原码
+     * 第二个参数是可选参数，如果给出length，那么前导补0，结果长度为length
      *
      * @param number
      * @return
      */
-    public String toInteger(String number) {
+    public String DecToTrueForm(String number, int... length) {
         long num = Long.parseLong(number);
         StringBuilder sb = new StringBuilder();
         while (num != 0) {
             sb.insert(0, num % 2);
             num /= 2;
         }
+        int len = sb.toString().length();
+        if (length.length != 0) {
+            for (int i = 0; i < length[0] - len; i++) {
+                sb.insert(0, '0');
+            }
+        }
         return sb.toString();
     }
+
 
     /**
      * 二进制原码转带符号的十进制
@@ -212,7 +230,7 @@ public class ALU {
      * @return
      */
     public String generateExp(int exp, int length) {
-        String expBin = toInteger(String.valueOf(exp));
+        String expBin = DecToTrueForm(String.valueOf(exp));
         return new StringBuilder().append(generateChars('0', length - expBin.length())).append(expBin).toString();
     }
 
@@ -292,10 +310,10 @@ public class ALU {
         //exp是阶码真值的十进制，mantissa是最终结果尾数的二进制表示
         //只有整数部分的情况
         if (dotPosition == -1) {
-            mantissa = toInteger(num).substring(1);
+            mantissa = DecToTrueForm(num).substring(1);
             expDec = mantissa.length();
         } else {
-            String rawExp = toInteger(num.substring(0, num.indexOf('.')));
+            String rawExp = DecToTrueForm(num.substring(0, num.indexOf('.')));
             //只有小数部分的情况
             if (rawExp.length() == 0) {
                 mantissa = decimalIntegerRepresentation(num.substring(num.indexOf('.')), 2 * sLength);
@@ -412,13 +430,13 @@ public class ALU {
             } else {
                 //整数部分为0的情况
                 integer = "0";
-                decimal = decimalLeftShift(beforeDot + "." + mantissa, -exp);
+                decimal = decimalRightShift(beforeDot + "." + mantissa, -exp);
             }
         } else {
             //这是非规格化数的情况，如果是8位指数，那么指数真值为-126( 2- 2^(n-1))，
             exp = 2 - (int) Math.pow(2, eLength - 1);
             integer = "0";
-            decimal = decimalLeftShift(beforeDot + "." + mantissa, -exp);
+            decimal = decimalRightShift(beforeDot + "." + mantissa, -exp);
         }
         sb.append(trueFormToUnSignedDec(integer));
         sb.append('.');
@@ -470,7 +488,7 @@ public class ALU {
      * @param n
      * @return
      */
-    public String decimalLeftShift(String operand, int n) {
+    public String decimalRightShift(String operand, int n) {
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i < n; i++) {
             sb.append('0');
@@ -479,6 +497,7 @@ public class ALU {
         sb.append(operand.replace(".", ""));
         return sb.toString();
     }
+
 
     /**
      * 逻辑右移操作。<br/>
@@ -684,6 +703,30 @@ public class ALU {
     }
 
     /**
+     * 同样是加法器，但是返回的不是溢出位，而是最高位的进位
+     *
+     * @param operand1
+     * @param operand2
+     * @param c
+     * @param length
+     * @return
+     */
+    public String adderAndReturnMSBCarry(String operand1, String operand2, char c, int length) {
+        StringBuilder sb = new StringBuilder();
+        String op1 = operand1 + generateChars('0', Math.abs(length - operand1.length()));
+        String op2 = operand2 + generateChars('0', Math.abs(length - operand2.length()));
+        char carry = c;
+        for (int i = length / 4 - 1; i >= 0; --i) {
+            String res = claAdder(op1.substring(4 * i, 4 * (i + 1)), op2.substring(4 * i, 4 * (i + 1)), carry);
+            sb.insert(0, res.substring(1));
+            carry = res.charAt(0);
+        }
+        //结果的首位是最高位的进位
+        sb.insert(0, carry);
+        return sb.toString();
+    }
+
+    /**
      * 整数加法，要求调用{@link #adder(String, String, char, int) adder}方法实现。<br/>
      * 例：integerAddition("0100", "0011", 8)
      *
@@ -696,30 +739,6 @@ public class ALU {
         return adder(operand1, operand2, '0', length);
     }
 
-    /**
-     * 带符号整数加法，可以调用{@link #adder(String, String, char, int) adder}等方法，
-     * 但不能直接将操作数转换为补码后使用{@link #integerAddition(String, String, int) integerAddition}、
-     * {@link #integerSubtraction(String, String, int) integerSubtraction}来实现。<br/>
-     * 例：signedAddition("1100", "1011", 8)
-     * 
-     * @param operand1 二进制原码表示的被加数，其中第1位为符号位
-     * @param operand2 二进制原码表示的加数，其中第1位为符号位
-     * @param length   存放操作数的寄存器的长度，为4的倍数。length不小于操作数的长度（不包含符号），当某个操作数的长度小于length时，需要将其长度扩展到length
-     * @return 长度为length+2的字符串表示的计算结果，其中第1位指示是否溢出（溢出为1，否则为0），第2位为符号位，后length位是相加结果
-     */
-    public String signedAddition(String operand1, String operand2, int length) {
-        String op1 = signExtension(operand1, length);
-        String op2 = signExtension(operand2, length);
-        char sign;
-        if (op1.charAt(0) == op2.charAt(0)) {
-            sign = op1.charAt(0);
-        }
-        String fullRes = adder(op1.substring(1), op2.substring(1), '0', length);
-        char overflow = fullRes.charAt(0);
-        String res = fullRes.substring(1);
-        
-        return null;
-    }
 
     /**
      * 整数减法，可调用{@link #adder(String, String, char, int) adder}方法实现。<br/>
@@ -731,7 +750,7 @@ public class ALU {
      * @return 长度为length+1的字符串表示的计算结果，其中第1位指示是否溢出（溢出为1，否则为0），后length位是相减结果
      */
     public String integerSubtraction(String operand1, String operand2, int length) {
-        return adder(operand1, oneAdder(negation(signExtension(operand2, length))).substring(1), '0', length);
+        return adder(operand1, complete(signExtension(operand2, length)), '0', length);
     }
 
     /**
@@ -793,7 +812,7 @@ public class ALU {
         }
 
         public void subFromA() {
-            setA(adder(getA(), oneAdder(negation(M)).substring(1), '0', length).substring(1));
+            setA(adder(getA(), complete(M), '0', length).substring(1));
         }
 
         /**
@@ -870,16 +889,16 @@ public class ALU {
 
         //如果被除数为0，那么直接返回0
         if (allOf(dividend, '0')) {
-            return generateChars('0', 2 * length + 1);
+            return generateChars('0', length + 1) + divisor;
         }
-        
+
         //这个是-2^(n-1)的二进制补码表示
         String _2n_1 = '1' + generateChars('0', length - 2) + '1';
         //如果被除数是-2^(n-1)，二进制补码为10000....0001，且除数为-1，二进制补码为全1，则溢出
         if (dividend.equals(_2n_1) && allOf(divisor, '1')) {
             return '1' + _2n_1;
         }
-        
+
         //计算正常情况
         NonRestoringRemainder nrr = new NonRestoringRemainder(dividend, divisor);
         //第一次加减操作由被除数和除数的符号决定，同号做加法，异号做加法
@@ -961,7 +980,7 @@ public class ALU {
         }
 
         public void subFromR() {
-            setR(adder(getR(), oneAdder(negation(divisor)).substring(1), '0', length).substring(1));
+            setR(adder(getR(), complete(divisor), '0', length).substring(1));
         }
 
         public void leftShift() {
@@ -993,10 +1012,118 @@ public class ALU {
 
     }
 
+    /**
+     * 带符号整数加法，可以调用{@link #adder(String, String, char, int) adder}等方法，
+     * 但不能直接将操作数转换为补码后使用{@link #integerAddition(String, String, int) integerAddition}、
+     * {@link #integerSubtraction(String, String, int) integerSubtraction}来实现。<br/>
+     * 例：signedAddition("1100", "1011", 8)
+     *
+     * @param operand1 二进制原码表示的被加数，其中第1位为符号位
+     * @param operand2 二进制原码表示的加数，其中第1位为符号位
+     * @param length   存放操作数的寄存器的长度，为4的倍数。length不小于操作数的长度（不包含符号），当某个操作数的长度小于length时，需要将其长度扩展到length
+     * @return 长度为length+2的字符串表示的计算结果，其中第1位指示是否溢出（溢出为1，否则为0），第2位为符号位，后length位是相加结果
+     */
+    public String signedAddition(String operand1, String operand2, int length) {
+        StringBuilder sb = new StringBuilder();
+        char sign;
+        //同号的话，进行不带符号的加法，结果为它们的共同符号
+        //如果最高位有进位，那么溢出
+        if (operand1.charAt(0) == operand2.charAt(0)) {
+            sign = operand1.charAt(0);
+            //去掉两个操作数的符号，并进行0扩展
+            String op1 = signExtension(operand1.substring(1), length, '0');
+            String op2 = signExtension(operand2.substring(1), length, '0');
+            String fullRes = adderAndReturnMSBCarry(op1, op2, '0', length);
+            //如果最高位有进位，那么溢出
+            sb.append(fullRes.charAt(0));
+            //符号是共同符号
+            sb.append(sign);
+            sb.append(fullRes.substring(1));
+        } else {
+            //异号，获得被减数的符号
+            sign = operand1.charAt(0);
+            String op1 = signExtension(operand1.substring(1), length, '0');
+            //对第二个操作数取补(取反加一)
+            String op2 = complete(signExtension((operand2.substring(1)), length, '0'));
+            String fullRes = adderAndReturnMSBCarry(op1, op2, '0', length);
+            //添加溢出位
+            //异号做加法是不可能溢出的，此时最高位进位用来判断够不够减，而不用于判断是否溢出；一定不会溢出
+            sb.append('0');
+            //如果最高位有进位，则够减，结果符号与被减数符号相同
+            if (fullRes.charAt(0) == '1') {
+                sb.append(sign);
+                sb.append(fullRes.substring(1));
+            } else {
+                //如果最高位没有进位，则不够减，结果取补，且结果符号与被减数符号相反，
+                sb.append(sign == '1' ? '0' : '1');
+                sb.append(complete(fullRes.substring(1)));
+            }
+        }
+        return sb.toString();
+    }
+
+    /**
+     * 专门用于浮点数的尾数加法
+     *
+     * @param operand1
+     * @param operand2
+     * @param length
+     * @return
+     */
+    public String decimalSignedAddition(String operand1, String operand2, int length) {
+        StringBuilder sb = new StringBuilder();
+        char sign;
+        //同号
+        if (operand1.charAt(0) == operand2.charAt(0)) {
+            sign = operand1.charAt(0);
+            //先进行小数的原码加法
+            String decimalSum = adderAndReturnMSBCarry(operand1.substring(2), operand2.substring(2), '0', length);
+            String integerSum = fullAdder(operand1.charAt(1), operand2.charAt(1), decimalSum.charAt(0));
+            //如果最高位有进位，那么溢出
+            sb.append(integerSum.charAt(0));
+            //符号是共同符号
+            sb.append(sign);
+            //整数
+            sb.append(integerSum.charAt(1));
+            //小数
+            sb.append(decimalSum.substring(1));
+        } else {
+            //异号
+            sign = operand1.charAt(0);
+            String op1 = operand1.substring(1);
+            String op2 = complete(operand2.substring(1));
+            //对第二个操作数取补(取反加一)
+            String decimalSum = adderAndReturnMSBCarry(op1.substring(1), op2.substring(1), '0', length);
+            String integerSum = fullAdder(op1.charAt(0), op2.charAt(0), decimalSum.charAt(0));
+            //添加溢出位
+            sb.append(integerSum.charAt(0));
+            //如果最高位有进位，则够减，结果符号与被减数符号相同
+            if (integerSum.charAt(0) == '1') {
+                sb.append(sign);
+                sb.append(integerSum.charAt(1));
+                sb.append(decimalSum.substring(1));
+            } else {
+                //如果最高位没有进位，则不够减，结果取补，且结果符号与被减数符号相反，
+                sb.append(sign == '1' ? '0' : '1');
+                sb.append(complete(integerSum.charAt(1) + decimalSum.substring(1)));
+            }
+        }
+        return sb.toString();
+    }
+
+    public String rightNormalize(String num) {
+        return num.substring(1);
+    }
+
+    public String leftNormalize(String num) {
+        return num.substring(1);
+    }
 
     /**
      * 浮点数加法，可调用{@link #signedAddition(String, String, int) signedAddition}等方法实现。<br/>
      * 例：floatAddition("00111111010100000", "00111111001000000", 8, 8, 8)
+     * 返回 "001000000001110000"
+     * （0.8125+0.625=1.4375）
      *
      * @param operand1 二进制表示的被加数
      * @param operand2 二进制表示的加数
@@ -1006,8 +1133,92 @@ public class ALU {
      * @return 长度为2+eLength+sLength的字符串表示的相加结果，其中第1位指示是否指数上溢（溢出为1，否则为0），其余位从左到右依次为符号、指数（移码表示）、尾数（首位隐藏）。舍入策略为向0舍入
      */
     public String floatAddition(String operand1, String operand2, int eLength, int sLength, int gLength) {
-        // TODO YOUR CODE HERE.
-        return null;
+        int expDiffConstant = (int) Math.pow(2, eLength - 1) - 1;
+        char overflow = '0';
+        char op1BeforeDot = '1';
+        char op2BeforeDot = '1';
+        if (allOf(operand1.substring(1, 1 + eLength), '0')) {
+            op1BeforeDot = '0';
+        }
+        if (allOf(operand2.substring(1, 1 + eLength), '0')) {
+            op2BeforeDot = '0';
+        }
+        String op1Mantissa = "" + operand1.charAt(0) + op1BeforeDot + operand1.substring(1 + eLength) + generateChars('0', gLength);
+        String op2Mantissa = "" + operand2.charAt(0) + op2BeforeDot + operand2.substring(1 + eLength) + generateChars('0', gLength);
+        int op1Exp = trueFormToUnSignedDec(operand1.substring(1, 1 + eLength)) - expDiffConstant;
+        int op2Exp = trueFormToUnSignedDec(operand2.substring(1, 1 + eLength)) - expDiffConstant;
+        int expDelta = Math.abs(op1Exp - op2Exp);
+        int finalExp = Math.max(op1Exp, op2Exp);
+        if (op1Exp > op2Exp) {
+            op2Mantissa = logRightShift(op2Mantissa, expDelta);
+        } else if (op1Exp < op2Exp) {
+            op1Mantissa = logRightShift(op1Mantissa, expDelta);
+        }
+        System.out.println(op1Exp);
+        System.out.println(op2Exp);
+        System.out.println("op1Mantissa:" + op1Mantissa);
+        System.out.println("op2Mantissa:" + op2Mantissa);
+        //凑齐4的倍数
+        String res = decimalSignedAddition(op1Mantissa, op2Mantissa, extendToMultipleOf4(sLength, gLength));
+        char addOverflow = res.charAt(0);
+        System.out.println("addOverflow:" + addOverflow);
+        char sign = res.charAt(1);
+        System.out.println("sign:" + sign);
+        //小数点前的位
+        char beforeDot = res.charAt(2);
+        //纯小数
+        String mantissa = res.substring(3);
+        System.out.println("mantissa:" + mantissa);
+
+        //如果尾数全为0，那么将阶码也置为0，返回
+        //res.substring(2) 包括了beforeDot和mantissa
+        if (addOverflow == '0' && allOf(res.substring(2), '0')) {
+            return overflow + sign + generateChars('0', eLength + sLength);
+        }
+        //TODO 处理beforeDot
+        //如果最高位有进位，那么需要右规
+        if (op1BeforeDot == '1' && op1BeforeDot == '1' && addOverflow == '1') {
+            mantissa = rightNormalize("" + addOverflow + beforeDot + mantissa);
+            ++finalExp;
+            //如果阶码上溢，那么置溢出位为1
+            if (finalExp > (int) Math.pow(2, eLength - 1)) {
+                overflow = '1';
+                return "" + overflow + sign + generateChars('1', eLength) + generateChars('0', sLength);
+            }
+        }
+        System.out.println("After 右规 mantissa:" + mantissa);
+
+        //如果没有溢出，并且尾数最高位为0，那么需要左规
+        //前提是在规格化数，小数点前为1的情况下
+        while (op1BeforeDot == '1' && op1BeforeDot == '1' && addOverflow == '0' && mantissa.charAt(0) == '0') {
+            --finalExp;
+            mantissa = leftNormalize(mantissa);
+        }
+        //如果是非规格化数，那么需要将mantissa本身含有的小数点前的0去掉
+        if (op1BeforeDot == '0' && op2BeforeDot == '0') {
+            mantissa = mantissa.substring(1);
+        }
+        StringBuilder sb = new StringBuilder();
+        sb.append(overflow);
+        sb.append(sign);
+        sb.append(DecToTrueForm(String.valueOf(finalExp + expDiffConstant), eLength));
+        System.out.println(DecToTrueForm(String.valueOf(finalExp + expDiffConstant), eLength));
+        sb.append(mantissa.substring(0, sLength));
+        System.out.println();
+        System.out.println();
+        return sb.toString();
+    }
+
+    public int extendToMultipleOf4(int... nums) {
+        int sum = 0;
+        for (int i = 0; i < nums.length; i++) {
+            sum += nums[i];
+        }
+        if (sum % 4 == 0) {
+            return sum;
+        } else {
+            return 4 * (sum / 4 + 1);
+        }
     }
 
     /**
@@ -1025,6 +1236,9 @@ public class ALU {
         // TODO YOUR CODE HERE.
         return null;
     }
+
+
+//*******************************************************************************************************
 
     /**
      * 浮点数乘法，可调用{@link #integerMultiplication(String, String, int) integerMultiplication}等方法实现。<br/>
